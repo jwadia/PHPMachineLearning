@@ -2,7 +2,7 @@
 class KNearestNeighbors {
 	
 	public $data = array();
-	public $max = 3;
+	public $max = 4;
 	
 	function train($samples, $labels) {
 		$countSamples = count($samples);
@@ -43,17 +43,29 @@ class KNearestNeighbors {
 
 class distance {
 	function euclidean($point1, $point2){
-		$calc = (($point2[0] - $point1[0])*($point2[0] - $point1[0]))+(($point2[1] - $point1[1])*($point2[1] - $point1[1]));
+		$countPoint1 = count($point1);
+		$countPoint1 = count($point2);
+		
+		if($countSamples == $countPoint2) {
+			for($x = 0; $x<$countPoint1; $x++) {
+				$calc += ($point2[$x] - $point1[$x])*($point2[$x] - $point1[$x]);
+			}
+		}
+				
 		$calc = sqrt($calc);
 		return $calc;
 	}
 }
 
 
-$samples = [[1, 3], [1, 4], [2, 4], [3, 1], [4, 1], [4, 2]];
+$samples = [[5.1, 3.5], [1, 4], [2, 4], [3, 1], [4, 1], [4, 2]];
 $labels = ['a', 'a', 'a', 'b', 'b', 'b'];
 
 $classifier = new KNearestNeighbors();
 $classifier->train($samples, $labels);
-echo $classifier->predict([3, 2]);
+echo $classifier->predict([5.1, 3.5, 1.4, 0.2]);
+
+
+$classifier = new distance();
+echo $classifier->euclidean([5.1, 3.5, 1.4, 0.2], [55, 5, 150, 0.2]);
 ?>
