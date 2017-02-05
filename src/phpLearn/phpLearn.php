@@ -1,8 +1,15 @@
 <?php
 class KNearestNeighbors {
 	
-	public $data = array();
-	public $max = 4;
+	private $data = array();
+	private $max = 0;
+	private $output = false;
+	private $predict = "";
+		
+	function __construct($max, $output) {
+        $this->max = $max;
+        $this->output = $output;
+    }
 	
 	function train($samples, $labels) {
 		$countSamples = count($samples);
@@ -36,8 +43,26 @@ class KNearestNeighbors {
 			}
 		}
 		arsort($labels);
+		$this->data = $labels;
 		$labels = key($labels);
-		return $labels;
+		$this->predict = $labels;
+		
+		if ($this->output == true) {
+			$average = new functions();
+			$x = 0;
+			$y = 0;
+			foreach($this->data as $key => $value) {
+				if ($x == 0) {
+					$temp = $value;
+				}
+				$y += $value;
+				$x++;
+			}
+			$out = array($this->predict, $average->average($temp,$y));
+			return $out;
+		} else {
+			return array($this->predict);
+		}
 	}
 }
 
@@ -57,15 +82,10 @@ class distance {
 	}
 }
 
-
-$samples = [[5.1, 3.5], [1, 4], [2, 4], [3, 1], [4, 1], [4, 2]];
-$labels = ['a', 'a', 'a', 'b', 'b', 'b'];
-
-$classifier = new KNearestNeighbors();
-$classifier->train($samples, $labels);
-echo $classifier->predict([5.1, 3.5, 1.4, 0.2]);
-
-
-$classifier = new distance();
-echo $classifier->euclidean([5.1, 3.5, 1.4, 0.2], [55, 5, 150, 0.2]);
+class functions {
+	function average($num1, $num2){
+		$avg = round(($num1/$num2)*100, 3) . "%";
+		return $avg;
+	}
+}
 ?>
