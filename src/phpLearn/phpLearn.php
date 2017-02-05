@@ -66,6 +66,42 @@ class KNearestNeighbors {
 	}
 }
 
+class LeastSquares {
+	private $data = array();
+	
+	function train($samples, $labels) {
+		$countSamples = count($samples);
+		$countLabels = count($labels);
+		if($countSamples == $countLabels) {
+			for($x = 0; $x<$countSamples; $x++) {
+				$this->data[] = [$labels[$x], $samples[$x][0]];
+			}
+		}
+	}
+	
+	function predict($point) {
+		$ysum = 0;
+		$xsum = 0;
+		$xx = 0;
+		$yy = 0;
+		
+		foreach($this->data as $value) {
+			$ysum += $value[0];
+			$xsum += $value[1];
+		}
+		$ymean = $ysum/count($this->data);
+		$xmean = $xsum/count($this->data);
+		foreach($this->data as $value) {
+			$xx += ($value[1]-$xmean)*($value[0]-$ymean);
+			$yy += ($value[1]-$xmean)*($value[1]-$xmean);
+		}
+		$slope = $xx/$yy;
+		$b = $ymean-($slope*$xmean);
+		$y = ($slope*$point)+$b;
+		return array(round($y, 2));
+	}
+}
+
 class distance {
 	function euclidean($point1, $point2){
 		$countPoint1 = count($point1);
