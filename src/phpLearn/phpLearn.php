@@ -68,6 +68,11 @@ class KNearestNeighbors {
 
 class LeastSquares {
 	private $data = array();
+	private $output = false;
+	
+	function __construct($output) {
+        $this->output = $output;
+    }
 	
 	function train($samples, $labels) {
 		$countSamples = count($samples);
@@ -98,7 +103,11 @@ class LeastSquares {
 		$slope = $xx/$yy;
 		$b = $ymean-($slope*$xmean);
 		$y = ($slope*$point)+$b;
-		return array(round($y, 2));
+		if($this->output == true) {
+			return array(round($y, 2), $b);
+		} else {
+			return array(round($y, 2));
+		}
 	}
 }
 
