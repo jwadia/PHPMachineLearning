@@ -133,4 +133,16 @@ class functions {
 		return $avg;
 	}
 }
+
+class data {
+	function iris() {
+		$data = array('samples'=> '', 'labels' => '');
+		$iris = array_map('str_getcsv', file('https://scansite.me/templates/ai/src/phpLearn/data/IRIS.csv'));
+		foreach($iris as $value) {
+			$data['samples'][] = array($value[0], $value[1], $value[2], $value[3]);
+			$data['labels'][] = $value[4];
+		}
+		return $data;
+	}
+}
 ?>
