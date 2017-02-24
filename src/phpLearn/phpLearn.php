@@ -114,7 +114,7 @@ class LeastSquares {
 class distance {
 	function euclidean($point1, $point2){
 		$countPoint1 = count($point1);
-		$countPoint1 = count($point2);
+		$countPoint2 = count($point2);
 		
 		if($countSamples == $countPoint2) {
 			for($x = 0; $x<$countPoint1; $x++) {
