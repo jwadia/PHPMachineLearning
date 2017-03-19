@@ -26,9 +26,15 @@ class KNearestNeighbors {
 		$d = array();
 		$labels = array();
 		$distance = new distance();
+		
+		
 		foreach($this->data as $value) {
-			$d[rand(1000,9999) . '-' . $value[0]] = $distance->euclidean($point, [$value[1][0], $value[1][1]]);
+			foreach($value[1] as $value2) {
+				$point2[] = $value2;
+			}
+			$d[rand(1000,9999) . '-' . $value[0]] = $distance->euclidean($point, $point2);
 			$labels[$value[0]] = 0;
+			unset($point2);
 		}
 		asort($d);	
 		$i = 0;
@@ -120,16 +126,18 @@ class LeastSquares {
 
 class distance {
 	function euclidean($point1, $point2){
+		$calc = 0;
 		$countPoint1 = count($point1);
 		$countPoint2 = count($point2);
 		
-		if($countSamples == $countPoint2) {
+		if($countPoint2 == $countPoint2) {
 			for($x = 0; $x<$countPoint1; $x++) {
 				$calc += ($point2[$x] - $point1[$x])*($point2[$x] - $point1[$x]);
 			}
 		}
 				
 		$calc = sqrt($calc);
+
 		return $calc;
 	}
 }
