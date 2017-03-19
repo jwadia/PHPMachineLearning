@@ -1,6 +1,5 @@
 <?php
 class KNearestNeighbors {
-	
 	private $data = array();
 	private $max = 0;
 	private $output = false;
@@ -22,6 +21,8 @@ class KNearestNeighbors {
 	}
 	
 	function predict($point) {
+		$timer = new timer();
+		$timer->start();
 		$d = array();
 		$labels = array();
 		$distance = new distance();
@@ -58,9 +59,11 @@ class KNearestNeighbors {
 				$y += $value;
 				$x++;
 			}
-			$out = array($this->predict, $average->average($temp,$y));
+			$timer->finish();
+			$out = array($this->predict, $average->average($temp,$y), $timer->runtime());
 			return $out;
 		} else {
+			$timer->finish();
 			return array($this->predict);
 		}
 	}
@@ -85,6 +88,8 @@ class LeastSquares {
 	}
 	
 	function predict($point) {
+		$timer = new timer();
+		$timer->start();
 		$ysum = 0;
 		$xsum = 0;
 		$xx = 0;
@@ -104,8 +109,10 @@ class LeastSquares {
 		$b = $ymean-($slope*$xmean);
 		$y = ($slope*$point)+$b;
 		if($this->output == true) {
-			return array(round($y, 2), $b);
+			$timer->finish();
+			return array(round($y, 2), $b, $timer->runtime());
 		} else {
+			$timer->finish();
 			return array(round($y, 2));
 		}
 	}
@@ -131,6 +138,23 @@ class functions {
 	function average($num1, $num2){
 		$avg = round(($num1/$num2)*100, 3) . "%";
 		return $avg;
+	}
+}
+
+class timer {
+	private $start;
+	private $finish;
+	
+	function start(){
+		$this->start = microtime(true);
+	}
+	
+	function finish(){
+		$this->finish = microtime(true);
+	}
+	
+	function runtime() {
+		return ($this->finish-$this->start)*10;
 	}
 }
 
