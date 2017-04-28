@@ -7,7 +7,7 @@ $data = $iris->iris();
 $samples = $data['samples'];
 $labels = $data['labels'];
 
-$classifier = new KNearestNeighbors(5, true);
+$classifier = new KNearestNeighbors(50, true);
 $classifier->train($samples, $labels);
 $data = $classifier->predict([5, 3.4, 1.6, 0.4]);
 
