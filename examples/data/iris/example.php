@@ -1,7 +1,7 @@
 <?php
 include '../../../src/phpLearn/phpLearn.php'; 
 
-$iris = new data();
+$iris = new Data();
 $data = $iris->iris();
 
 $samples = $data['samples'];

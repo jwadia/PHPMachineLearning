@@ -21,11 +21,11 @@ class KNearestNeighbors {
 	}
 	
 	function predict($point) {
-		$timer = new timer();
+		$timer = new Timer();
 		$timer->start();
 		$d = array();
 		$labels = array();
-		$distance = new distance();
+		$distance = new Distance();
 		foreach($this->data as $value) {
 			$d[rand(1000,9999) . '-' . $value[0]] = $distance->euclidean($point, [$value[1][0], $value[1][1]]);
 			$labels[$value[0]] = 0;
@@ -49,7 +49,7 @@ class KNearestNeighbors {
 		$this->predict = $labels;
 		
 		if ($this->output == true) {
-			$average = new functions();
+			$average = new Functions();
 			$x = 0;
 			$y = 0;
 			foreach($this->data as $key => $value) {
@@ -88,7 +88,7 @@ class LeastSquares {
 	}
 	
 	function predict($point) {
-		$timer = new timer();
+		$timer = new Timer();
 		$timer->start();
 		$ysum = 0;
 		$xsum = 0;
@@ -118,7 +118,7 @@ class LeastSquares {
 	}
 }
 
-class distance {
+class Distance {
 	function euclidean($point1, $point2){
 		$calc = 0;
 		$countPoint1 = count($point1);
@@ -135,14 +135,14 @@ class distance {
 	}
 }
 
-class functions {
+class Functions {
 	function average($num1, $num2){
 		$avg = round(($num1/$num2)*100, 3) . "%";
 		return $avg;
 	}
 }
 
-class timer {
+class Timer {
 	private $start;
 	private $finish;
 	
@@ -159,7 +159,7 @@ class timer {
 	}
 }
 
-class data {
+class Data {
 	function iris() {
 		$data = array('samples'=> '', 'labels' => '');
 		$iris = array_map('str_getcsv', file('https://scansite.me/templates/ai/src/phpLearn/data/IRIS.csv'));
@@ -168,6 +168,22 @@ class data {
 			$data['labels'][] = $value[4];
 		}
 		return $data;
+	}
+}
+
+class Accuracy {
+	function score($actual, $predicted) {
+		$total = 0;
+		$count = 0;
+		if(count($actual) == count($predicted)) {
+				for ($x = 0; $x < count($actual); $x++) {
+					$total++;
+					if($actual[$x] == $predicted[$x]) {
+						$count++;
+					}
+				}
+		}
+		return $count/$total;
 	}
 }
 ?>
