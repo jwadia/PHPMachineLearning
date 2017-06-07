@@ -117,6 +117,65 @@ class LeastSquares {
 		}
 	}
 }
+
+class QuadraticRegression {
+	function __construct($output) {
+        $this->output = $output;
+    }
+	
+	function train($samples, $labels) {
+		$countSamples = count($samples);
+		$countLabels = count($labels);
+		if($countSamples == $countLabels) {
+			for($x = 0; $x<$countSamples; $x++) {
+				$this->data[] = [$labels[$x], $samples[$x][0]];
+			}
+		}
+	}
+	
+	function predict($point) {
+		$timer = new Timer();
+		$timer->start();
+		$n = count($this->data);
+		$x = 0;
+		$x2 = 0;
+		$x3 = 0;
+		$x4 = 0;
+		$xy = 0;
+		$x2y = 0;
+		$y = 0;
+		
+		foreach($this->data as $value) {
+			$x += $value[0];
+			$y += $value[1];
+			$x2 += pow($value[0], 2);
+			$x3 += pow($value[0], 3);
+			$x4 += pow($value[0], 4);
+			$xy += ($value[0]*$value[1]);
+			$x2y += (pow($value[0], 2)*$value[1]);
+		}
+		$xx = ($x2-(pow($x, 2)/$n));
+		$xy = ($xy-(($x*$y)/$n));
+		$xx2 = ($x3-(($x2*$x)/$n));
+		$x2y = ($x2y-(($x2*$y)/$n));
+		$x2x2 = ($x4-((pow($x2, 2))/$n));
+		
+		$a = (($x2y*$xx)-($xy*$xx2))/(($xx*$x2x2)-pow($xx2, 2));
+		$b = (($xy*$x2x2)-($x2y*$xx2))/(($xx*$x2x2)-pow($xx2, 2));
+		$c = (($y / $n)-($b*($x/$n))-($a*($x2/$n)));
+		
+		$y = ($a*pow($point, 2))+$b*$point+$c;
+		
+		if($this->output == true) {
+			$timer->finish();
+			return array(round($y, 2), $c, $timer->runtime());
+		} else {
+			$timer->finish();
+			return array(round($y, 2));
+		}
+	}
+}
+
 class SVC {
 	private $data = array();
 	private $output = false;
