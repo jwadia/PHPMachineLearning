@@ -118,6 +118,63 @@ class LeastSquares {
 	}
 }
 
+class MultipleLinearRegression {
+	function __construct($output) {
+        $this->output = $output;
+    }
+	
+	function train($samples, $labels) {
+		$countSamples = count($samples);
+		$countLabels = count($labels);
+		if($countSamples == $countLabels) {
+			for($x = 0; $x<$countSamples; $x++) {
+				$this->data[] = [$labels[$x], $samples[$x][0], $samples[$x][1]];
+			}
+		}
+	}
+	
+	function predict($point) {
+		$timer = new Timer();
+		$timer->start();
+		$n = count($this->data);
+		$y = 0;
+		$x1 = 0;
+		$x12 = 0;
+		$x2 = 0;
+		$x22 = 0;
+		$x1y = 0;
+		$x2y = 0;
+		$x1x2 = 0;
+		foreach($this->data as $value) {
+			$x12 += pow($value[1], 2);
+			$x22 += pow($value[2], 2);
+			$y += $value[0];
+			$x1 += $value[1];
+			$x2 += $value[2];
+			$x1y += $value[1]*$value[0];
+			$x2y += $value[2]*$value[0];
+			$x1x2 += $value[1]*$value[2];
+		}
+		$x1y = $x1y-(($x1*$y)/$n);
+		$x2y = $x2y-(($x2*$y)/$n);
+		$x1x2 = $x1x2-(($x1*$x2)/$n);
+		
+		$b = ((($x22 - (pow($x2,2)/$n))*$x1y)-($x1x2*$x2y))/((($x12 - (pow($x1,2)/$n))*($x22 - (pow($x2,2)/$n)))-pow($x1x2,2));
+		$b2 = ((($x12 - (pow($x1,2)/$n))*$x2y)-($x1x2*$x1y))/((($x12 - (pow($x1,2)/$n))*($x22 - (pow($x2,2)/$n)))-pow($x1x2,2));
+		$a = ($y/$n)-($b*($x1/$n))-($b2*($x2/$n));
+		
+		$y = ($b*$point[0])+($b2*$point[1])+$a;
+		
+		if($this->output == true) {
+			$timer->finish();
+			return array(round($y, 2), $a, $timer->runtime());
+		} else {
+			$timer->finish();
+			return array(round($y, 2));
+		}
+	}
+}
+
 class QuadraticRegression {
 	function __construct($output) {
         $this->output = $output;
