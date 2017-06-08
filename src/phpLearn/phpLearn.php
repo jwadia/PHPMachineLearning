@@ -1,9 +1,8 @@
 <?php
 class KNearestNeighbors {
+	private $output = false;
 	private $data = array();
 	private $max = 0;
-	private $output = false;
-	private $predict = "";
 		
 	function __construct($max, $output) {
         $this->max = $max;
@@ -46,7 +45,7 @@ class KNearestNeighbors {
 		arsort($labels);
 		$this->data = $labels;
 		$labels = key($labels);
-		$this->predict = $labels;
+		$predict = $labels;
 		
 		if ($this->output == true) {
 			$average = new Functions();
@@ -60,11 +59,11 @@ class KNearestNeighbors {
 				$x++;
 			}
 			$timer->finish();
-			$out = array($this->predict, $average->average($temp,$y), $timer->runtime());
+			$out = array($predict, $average->average($temp,$y), $timer->runtime());
 			return $out;
 		} else {
 			$timer->finish();
-			return array($this->predict);
+			return array($predict);
 		}
 	}
 }
@@ -72,6 +71,8 @@ class KNearestNeighbors {
 class LeastSquares {
 	private $data = array();
 	private $output = false;
+	private $m = 0;
+	private $b = 0;
 	
 	function __construct($output) {
         $this->output = $output;
@@ -79,22 +80,16 @@ class LeastSquares {
 	
 	function train($samples, $labels) {
 		$countSamples = count($samples);
-		$countLabels = count($labels);
+		$countLabels = count($labels);		
 		if($countSamples == $countLabels) {
 			for($x = 0; $x<$countSamples; $x++) {
 				$this->data[] = [$labels[$x], $samples[$x][0]];
 			}
 		}
-	}
-	
-	function predict($point) {
-		$timer = new Timer();
-		$timer->start();
 		$ysum = 0;
 		$xsum = 0;
 		$xx = 0;
-		$yy = 0;
-		
+		$yy = 0;		
 		foreach($this->data as $value) {
 			$ysum += $value[0];
 			$xsum += $value[1];
@@ -105,12 +100,17 @@ class LeastSquares {
 			$xx += ($value[1]-$xmean)*($value[0]-$ymean);
 			$yy += ($value[1]-$xmean)*($value[1]-$xmean);
 		}
-		$slope = $xx/$yy;
-		$b = $ymean-($slope*$xmean);
-		$y = ($slope*$point)+$b;
+		$this->m = $xx/$yy;
+		$this->b = $ymean-($this->m*$xmean);
+	}
+	
+	function predict($point) {
+		$timer = new Timer();
+		$timer->start();
+		$y = ($this->m*$point)+$this->b;
 		if($this->output == true) {
 			$timer->finish();
-			return array(round($y, 2), $b, $timer->runtime());
+			return array(round($y, 2), $this->b, $timer->runtime());
 		} else {
 			$timer->finish();
 			return array(round($y, 2));
@@ -119,6 +119,11 @@ class LeastSquares {
 }
 
 class MultipleLinearRegression {
+	private $data = array();
+	private $output = false;
+	private $m1 = 0;
+	private $m2 = 0;
+	private $b = 0;
 	function __construct($output) {
         $this->output = $output;
     }
@@ -131,11 +136,6 @@ class MultipleLinearRegression {
 				$this->data[] = [$labels[$x], $samples[$x][0], $samples[$x][1]];
 			}
 		}
-	}
-	
-	function predict($point) {
-		$timer = new Timer();
-		$timer->start();
 		$n = count($this->data);
 		$y = 0;
 		$x1 = 0;
@@ -159,15 +159,19 @@ class MultipleLinearRegression {
 		$x2y = $x2y-(($x2*$y)/$n);
 		$x1x2 = $x1x2-(($x1*$x2)/$n);
 		
-		$b = ((($x22 - (pow($x2,2)/$n))*$x1y)-($x1x2*$x2y))/((($x12 - (pow($x1,2)/$n))*($x22 - (pow($x2,2)/$n)))-pow($x1x2,2));
-		$b2 = ((($x12 - (pow($x1,2)/$n))*$x2y)-($x1x2*$x1y))/((($x12 - (pow($x1,2)/$n))*($x22 - (pow($x2,2)/$n)))-pow($x1x2,2));
-		$a = ($y/$n)-($b*($x1/$n))-($b2*($x2/$n));
-		
-		$y = ($b*$point[0])+($b2*$point[1])+$a;
+		$this->m1 = ((($x22 - (pow($x2,2)/$n))*$x1y)-($x1x2*$x2y))/((($x12 - (pow($x1,2)/$n))*($x22 - (pow($x2,2)/$n)))-pow($x1x2,2));
+		$this->m2 = ((($x12 - (pow($x1,2)/$n))*$x2y)-($x1x2*$x1y))/((($x12 - (pow($x1,2)/$n))*($x22 - (pow($x2,2)/$n)))-pow($x1x2,2));
+		$this->b = ($y/$n)-($this->m1*($x1/$n))-($this->m2*($x2/$n));
+	}
+	
+	function predict($point) {
+		$timer = new Timer();
+		$timer->start();
+		$y = ($this->m1*$point[0])+($this->m2*$point[1])+$this->b;
 		
 		if($this->output == true) {
 			$timer->finish();
-			return array(round($y, 2), $a, $timer->runtime());
+			return array(round($y, 2), $this->b, $timer->runtime());
 		} else {
 			$timer->finish();
 			return array(round($y, 2));
@@ -176,6 +180,11 @@ class MultipleLinearRegression {
 }
 
 class QuadraticRegression {
+	private $data = array();
+	private $output = false;
+	private $a = 0;
+	private $b = 0;
+	private $c = 0;
 	function __construct($output) {
         $this->output = $output;
     }
@@ -188,11 +197,6 @@ class QuadraticRegression {
 				$this->data[] = [$labels[$x], $samples[$x][0]];
 			}
 		}
-	}
-	
-	function predict($point) {
-		$timer = new Timer();
-		$timer->start();
 		$n = count($this->data);
 		$x = 0;
 		$x2 = 0;
@@ -201,7 +205,6 @@ class QuadraticRegression {
 		$xy = 0;
 		$x2y = 0;
 		$y = 0;
-		
 		foreach($this->data as $value) {
 			$x += $value[0];
 			$y += $value[1];
@@ -217,15 +220,20 @@ class QuadraticRegression {
 		$x2y = ($x2y-(($x2*$y)/$n));
 		$x2x2 = ($x4-((pow($x2, 2))/$n));
 		
-		$a = (($x2y*$xx)-($xy*$xx2))/(($xx*$x2x2)-pow($xx2, 2));
-		$b = (($xy*$x2x2)-($x2y*$xx2))/(($xx*$x2x2)-pow($xx2, 2));
-		$c = (($y / $n)-($b*($x/$n))-($a*($x2/$n)));
+		$this->a = (($x2y*$xx)-($xy*$xx2))/(($xx*$x2x2)-pow($xx2, 2));
+		$this->b = (($xy*$x2x2)-($x2y*$xx2))/(($xx*$x2x2)-pow($xx2, 2));
+		$this->c = (($y / $n)-($this->b*($x/$n))-($this->a*($x2/$n)));
+	}
+	
+	function predict($point) {
+		$timer = new Timer();
+		$timer->start();
 		
-		$y = ($a*pow($point, 2))+$b*$point+$c;
+		$y = ($this->a*pow($point, 2))+$this->b*$point+$this->c;
 		
 		if($this->output == true) {
 			$timer->finish();
-			return array(round($y, 2), $c, $timer->runtime());
+			return array(round($y, 2), $this->c, $timer->runtime());
 		} else {
 			$timer->finish();
 			return array(round($y, 2));
@@ -250,11 +258,11 @@ class SVC {
 		}
 	}
 	function predict($point) {
+		$timer = new Timer();
+		$timer->start();
 		$slopef = 0;
 		$bf = 0;
 		$list = array();
-		$timer = new Timer();
-		$timer->start();
 		
 		foreach($this->data as $value) {
 			if(!in_array($value[0], $list)) {
