@@ -347,6 +347,195 @@ class SVC {
 
 }
 
+class NeuralNetwork {
+	private $data = array();
+	private $output = false;
+	private $layers = array();
+	private $labels = array();
+	private $network;
+	private $averages;
+	
+	function __construct($layers, $labels, $output) {
+        $this->output = $output;
+        $this->layers = $layers;
+        $this->labels = $labels;
+    }
+	
+	function train($samples, $labels) {
+		$countSamples = count($samples);
+		$countLabels = count($labels);
+		if($countSamples == $countLabels) {
+			for($x = 0; $x<$countSamples; $x++) {
+				$this->data[] = [$labels[$x], $samples[$x]];
+			}
+		}
+		$network = array();
+		$inputs = count($this->data[0][1]);
+		$layers = count($this->layers);
+		$counter = 0;
+		$counter2 = 0;
+		$temp = 0;
+		$network[] = array();
+		$averages = array();
+		foreach($this->labels as $value) {
+			$averages[$value] = array(0,0);
+		}
+		
+		for ($q = 0; $q < count($samples); $q++) {
+			$temp = 0;
+			foreach($samples[$q] as $value) {
+				$temp += $value;
+			}
+			$temp /= count($samples[$q]);
+			$averages[$labels[$q]][0] += $temp;
+			$averages[$labels[$q]][1]++;
+		}
+		
+		foreach($averages as $key => $value) {
+			$averages[$key] = $averages[$key][0]/$averages[$key][1];
+		}	
+		
+		for ($x = 0; $x < $inputs; $x++) {
+			$network[0][] = 0;
+		}
+		
+		
+		for($x = 1; $x <= $layers*2; $x+=2) {
+			$network[] = array();
+			for ($y = 0; $y < ($this->layers[$counter]*count($network[$x-1])); $y++) {
+				$network[$x][] = rand(1, 999)/1000;
+			}
+			$network[] = array();
+			for ($y = 0; $y < $this->layers[$counter]; $y++) {
+				$network[$x+1][] = 0;
+			}
+			$counter++;						
+		}
+		for($x = 1; $x <= $layers*2; $x+=2) {
+			$counter = 0;
+			$counter2 = 0;
+			foreach($network[$x-1] as $value) {
+				$counter2 = 0;
+				for ($k = 0; $k < count($network[$x+1]); $k++) {
+					$network[$x+1][$counter2] += $value*$network[$x][$counter+$k];
+					$counter2++;
+				}
+				$counter += count($network[$x])/count($network[$x-1]);
+			}
+			for ($z = 0; $z < count($network[$x+1]); $z++) {
+				$network[$x+1][$z] = $network[$x+1][$z]/count($network[$x-1]);
+			}
+		}
+		$network[] = array();
+		
+		for ($x = 0; $x < count($this->labels); $x++) {
+			$network[count($network)-1][$this->labels[$x]] = $network[count($network)-2][$x];
+		}
+		
+		for ($q = 0; $q < count($samples); $q++) {
+			$inputs = count($this->data[0][1]);
+			$layers = count($this->layers);
+			$counter = 0;
+			$counter2 = 0;
+			$temp = 0;
+			$correct = $labels[$q];
+			$network[0] = $samples[$q];
+			for($x = 1; $x <= $layers*2; $x+=2) {
+				$counter = 0;
+				$counter2 = 0;
+				foreach($network[$x-1] as $value) {
+					$counter2 = 0;
+					for ($k = 0; $k < count($network[$x+1]); $k++) {
+						$network[$x+1][$counter2] += $value*$network[$x][$counter+$k];
+						$counter2++;
+					}
+					$counter += count($network[$x])/count($network[$x-1]);
+				}
+				for ($z = 0; $z < count($network[$x+1]); $z++) {
+					$network[$x+1][$z] = $network[$x+1][$z]/count($network[$x-1]);
+				}
+			}			
+			for ($x = 0; $x < count($this->labels); $x++) {
+				$network[count($network)-1][$this->labels[$x]] = $network[count($network)-2][$x];
+			}
+			
+			$ratio =  $network[count($network)-1][$correct]/$averages[$correct];
+			
+			if ($ratio > 1) {
+				$ratio -= 1;
+				$key = array_search($network[count($network)-1][$correct], $network[count($network)-2]);
+				
+				$levels = count($this->layers);
+
+				for ($x = 1; $x <= $levels*2; $x+=2) {
+					for ($y = $key; $y < count($network[count($network)-2-$x]); $y+=count($network[count($network)-2-$x])/count($network[count($network)-3-$x])){
+						$network[count($network)-2-$x][$y] = $network[count($network)-2-$x][$y]-($network[count($network)-2-$x][$y]*($ratio/(count($network[count($network)-2-$x])/(count($network[count($network)-2-$x])/count($network[count($network)-3-$x])))));
+					}
+				}
+			} else {
+				$key = array_search($network[count($network)-1][$correct], $network[count($network)-2]);
+				
+				$levels = count($this->layers);
+
+				for ($x = 1; $x <= $levels*2; $x+=2) {
+					for ($y = $key; $y < count($network[count($network)-2-$x]); $y+=count($network[count($network)-2-$x])/count($network[count($network)-3-$x])){
+						$network[count($network)-2-$x][$y] = $network[count($network)-2-$x][$y]+($network[count($network)-2-$x][$y]*($ratio/(count($network[count($network)-2-$x])/(count($network[count($network)-2-$x])/count($network[count($network)-3-$x])))));
+					}
+				}
+			}
+			$this->network = $network;
+			$this->averages = $averages;
+		}
+	}
+	
+	function predict($point) {
+		$timer = new Timer();
+		$timer->start();
+		$network = $this->network;
+		$inputs = count($this->data[0][1]);
+		$layers = count($this->layers);
+		$counter = 0;
+		$counter2 = 0;
+		$temp = 0;
+		$predicted = array();
+		$network[0] = $point;
+		for($x = 1; $x <= $layers*2; $x+=2) {
+			$counter = 0;
+			$counter2 = 0;
+			foreach($network[$x-1] as $value) {
+				$counter2 = 0;
+				for ($k = 0; $k < count($network[$x+1]); $k++) {
+					$network[$x+1][$counter2] += $value*$network[$x][$counter+$k];
+					$counter2++;
+				}
+				$counter += count($network[$x])/count($network[$x-1]);
+			}
+			for ($z = 0; $z < count($network[$x+1]); $z++) {
+				$network[$x+1][$z] = $network[$x+1][$z]/count($network[$x-1]);
+			}
+		}			
+		for ($x = 0; $x < count($this->labels); $x++) {
+			$network[count($network)-1][$this->labels[$x]] = $network[count($network)-2][$x];
+		}
+		
+		foreach ($network[count($network)-1] as $key => $value) {
+			$predicted[$key] = abs($this->averages[$key]-$value);
+		}
+		
+		asort($predicted);		
+				
+		$predicted = array_keys($predicted,min($predicted))[0];
+		
+		if($this->output == true) {
+			$timer->finish();
+			return array($predicted, $timer->runtime());
+		} else {
+			$timer->finish();
+			return array($predicted);
+		}
+	}
+}
+
 class Distance {
 	function euclidean($point1, $point2){
 		$calc = 0;
@@ -368,6 +557,10 @@ class Functions {
 	function average($num1, $num2){
 		$avg = round(($num1/$num2)*100, 3) . "%";
 		return $avg;
+	}
+	function logistic($x) {
+		$fx = 1/(1+pow(2.7182, -1*($x)));
+		return $fx;
 	}
 }
 
