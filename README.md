@@ -2,24 +2,24 @@
 
 
 ## Contents
-- Installation
-- Features
-- Documentation
-    - Accuracy Class
-        - Average
-    - KNearestNeighbors
+- [Installation] (https://github.com/jwadia/PHPMachineLearning#installation)
+- [Features] (https://github.com/jwadia/PHPMachineLearning#features)
+- [Documentation] (https://github.com/jwadia/PHPMachineLearning#documentation)
+    - [Accuracy Class] (https://github.com/jwadia/PHPMachineLearning#accuracy)
+        - [Score] (https://github.com/jwadia/PHPMachineLearning#score)
+    - [KNearestNeighbors] (https://github.com/jwadia/PHPMachineLearning#knearestneighbors)
     - NuralNetwork
-    - Data Class
-        - Iris
-    - Distance Class
-        - Euclidean Distance
-    - LeastSquares
-    - Multiple Linear Regression
-    - Quadratic Regression
-    - Support Vector Classification
-    - Timer Class
-- Licence
-- Author
+    - [Data Class] (https://github.com/jwadia/PHPMachineLearning#data)
+        - [Iris] (https://github.com/jwadia/PHPMachineLearning#iris)
+    - [Distance Class] (https://github.com/jwadia/PHPMachineLearning#distance)
+        - [Euclidean Distance] (https://github.com/jwadia/PHPMachineLearning#euclidean)
+    - [LeastSquares] (https://github.com/jwadia/PHPMachineLearning#leastsquares)
+    - [Multiple Linear Regression] (https://github.com/jwadia/PHPMachineLearning#multiple-linear-regression)
+    - [Quadratic Regression] (https://github.com/jwadia/PHPMachineLearning#quadratic-regression)
+    - [Support Vector Classification] (https://github.com/jwadia/PHPMachineLearning#support-vector-classification)
+    - [Timer Class] (https://github.com/jwadia/PHPMachineLearning#timer)
+- [Licence] (https://github.com/jwadia/PHPMachineLearning#licence)
+- [Author] (https://github.com/jwadia/PHPMachineLearning#author)
 
 ## Installation
 
@@ -34,20 +34,21 @@ include_once 'phpLearn.php';
 ## Features
 
 - Classification
-    - KNearestNeighbors
-    - Support Vector Classification
+    - [KNearestNeighbors] (https://github.com/jwadia/PHPMachineLearning#knearestneighbors)
+    - [Support Vector Classification] (https://github.com/jwadia/PHPMachineLearning#support-vector-classification)
 - Regression
-    - LeastSquares
-    - Multiple Linear Regression
-    - Quadratic Regression
+    - [LeastSquares] (https://github.com/jwadia/PHPMachineLearning#leastsquares)
+    - [Multiple Linear Regression] (https://github.com/jwadia/PHPMachineLearning#multiple-linear-regression)
+    - [Quadratic Regression] (https://github.com/jwadia/PHPMachineLearning#quadratic-regression)
 - Nural Network
 - Helper Classes
-    - Accuracy
-    - Data
-        - Iris Dataset
-    - Distance
-        - Euclidean Distance
-    - Timer
+    - [Accuracy Class] (https://github.com/jwadia/PHPMachineLearning#accuracy)
+		- [Score] (https://github.com/jwadia/PHPMachineLearning#score)
+    - [Data Class] (https://github.com/jwadia/PHPMachineLearning#data)
+        - [Iris Dataset] (https://github.com/jwadia/PHPMachineLearning#iris)
+    - [Distance Class] (https://github.com/jwadia/PHPMachineLearning#distance)
+		- [Euclidean Distance] (https://github.com/jwadia/PHPMachineLearning#euclidean)
+    - [Timer Class] (https://github.com/jwadia/PHPMachineLearning#timer)
 
 ## Documentation
 
